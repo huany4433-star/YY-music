@@ -503,7 +503,7 @@ struct ProfileView: View {
                     .foregroundStyle(Color.beansComment.opacity(0.85))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("本软件完全免费，全部功能开源 · GitHub：YOUR_GITHUB_USERNAME/YY-Music")
+                Text("本软件完全免费，全部功能开源 · GitHub：huany4433-star/YY-Music")
                     .font(YYMusicFont.appFont(11, .semibold))
                     .foregroundStyle(Color.beansAmber)
                     .multilineTextAlignment(.center)
@@ -589,7 +589,7 @@ struct ProfileView: View {
         VStack(spacing: 0) {
             Button {
                 YYMusicHaptics.tap()
-                if let url = URL(string: "https://github.com/YOUR_GITHUB_USERNAME/YY-Music") {
+                if let url = URL(string: "https://github.com/huany4433-star/YY-Music") {
                     UIApplication.shared.open(url)
                 }
             } label: {
@@ -602,7 +602,7 @@ struct ProfileView: View {
                         Text("更新地址")
                             .font(YYMusicFont.appFont(14, .semibold))
                             .foregroundStyle(Color.beansLabel)
-                        Text("GitHub：YOUR_GITHUB_USERNAME/YY-Music")
+                        Text("GitHub：huany4433-star/YY-Music")
                             .font(YYMusicFont.appFont(11))
                             .foregroundStyle(Color.beansComment)
                             .lineLimit(1)

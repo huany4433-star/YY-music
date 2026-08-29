@@ -3,12 +3,12 @@
 > 一款基于 **iOS 26 原生液态玻璃（Liquid Glass）** 的第三方音乐播放器（兼容 iOS 16+，低版本自动使用系统材质），聚合网易云音乐与 QQ 音乐，纯 SwiftUI 实现。
 > 本软件完全开源，仅供学习研究使用。
 
-[![GitHub Pages 预览](https://img.shields.io/badge/在线预览-GitHub%20Pages-blue)](https://YOUR_GITHUB_USERNAME.github.io/YY-Music/)
+[![GitHub Pages 预览](https://img.shields.io/badge/在线预览-GitHub%20Pages-blue)](https://huany4433-star.github.io/YY-Music/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-iOS%2016+-orange)]()
 [![Swift](https://img.shields.io/badge/Swift-5-orange)]()
 
-**👀 在线预览（HTML 介绍页）：** https://YOUR_GITHUB_USERNAME.github.io/YY-Music/
+**👀 在线预览（HTML 介绍页）：** https://huany4433-star.github.io/YY-Music/
 
 ## 🧑‍💻 关于本软件
 
@@ -140,7 +140,7 @@ YYMusic/
 
 ## 🔨 构建
 
-GitHub Actions（`Build Unsigned IPA`）自动构建，产物发布到 [Releases](https://github.com/YOUR_GITHUB_USERNAME/YY-Music/releases)。
+GitHub Actions（`Build Unsigned IPA`）自动构建，产物发布到 [Releases](https://github.com/huany4433-star/YY-Music/releases)。
 
 本地构建（需要 Mac + Xcode 26）：
 
@@ -174,6 +174,6 @@ ditto -c -k --sequesterRsrc --keepParent Payload YYMusic-unsigned.ipa
 
 ## 📄 License
 
-[MIT](LICENSE) © 2026 YOUR_GITHUB_USERNAME
+[MIT](LICENSE) © 2026 huany4433-star
 
 **开源说明：** 本项目为开源软件，代码公开透明，接受 Issue 反馈与 Fork 学习。非官方 API 属逆向学习范畴，请尊重各平台服务条款，合理使用。
