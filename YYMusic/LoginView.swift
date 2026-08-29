@@ -18,6 +18,7 @@ struct LoginView: View {
     @State private var timer: Timer?
     @State private var showWebLogin = false
     @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var customIconStore = CustomIconStore.shared
 
     var body: some View {
         let _ = theme.accent
@@ -25,9 +26,18 @@ struct LoginView: View {
             GlassBackdrop(customColor: theme.backgroundSyncAll ? theme.customBackground : nil)
             VStack(spacing: 22) {
                 Spacer()
-                Image(systemName: "beats.headphones")
-                    .font(.system(size: 54, weight: .light))
-                    .foregroundStyle(LinearGradient.beansAccent)
+                if let icon = customIconStore.customIcon {
+                    Image(uiImage: icon)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 76, height: 76)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .shadow(color: Color.beansHighlight.opacity(0.4), radius: 18, y: 8)
+                } else {
+                    Image(systemName: "beats.headphones")
+                        .font(.system(size: 54, weight: .light))
+                        .foregroundStyle(LinearGradient.beansAccent)
+                }
                 Text("YY Music")
                     .font(YYMusicFont.appFont(34, .bold))
                     .foregroundStyle(Color.beansLabel)

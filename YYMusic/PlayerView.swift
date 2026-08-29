@@ -18,6 +18,7 @@ struct PlayerView: View {
     @EnvironmentObject private var favorites: FavoritesStore
     @Environment(\.colorScheme) private var colorScheme
     @Binding var isPresented: Bool
+    @ObservedObject private var customIconStore = CustomIconStore.shared
 
     @State private var lyrics: [LyricLine] = []
     @State private var showLyrics = false
@@ -465,11 +466,20 @@ struct PlayerView: View {
                         .font(YYMusicFont.appFont(12, .semibold))
                         .foregroundStyle(palette.secondary)
                         .lineLimit(1)
-                    Text(song?.album ?? "YY Music")
-                        .font(YYMusicFont.appFont(10))
-                        .foregroundStyle(palette.secondary.opacity(0.85))
-                        .lineLimit(1)
-                        .truncationMode(.tail)
+                    HStack(spacing: 4) {
+                        if let icon = customIconStore.customIcon {
+                            Image(uiImage: icon)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 11, height: 11)
+                                .clipShape(RoundedRectangle(cornerRadius: 2.5, style: .continuous))
+                        }
+                        Text(song?.album ?? "YY Music")
+                            .font(YYMusicFont.appFont(10))
+                            .foregroundStyle(palette.secondary.opacity(0.85))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
                 }
                 .frame(minWidth: 118, maxWidth: 190)
                 .contentShape(Rectangle())

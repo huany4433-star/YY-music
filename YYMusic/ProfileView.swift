@@ -32,6 +32,7 @@ struct ProfileView: View {
     @State private var showUpdateResult = false
     /// 自动下载新版 IPA
     @ObservedObject private var ipaDownloader = IPADownloader.shared
+    @ObservedObject private var customIconStore = CustomIconStore.shared
     @State private var showDownloadOverlay = false
     @State private var downloadOutcome: DownloadOutcome?
     @State private var showDownloadOutcome = false
@@ -491,9 +492,22 @@ struct ProfileView: View {
         VStack(alignment: .leading, spacing: 10) {
             SectionHeader(title: "关于")
             VStack(spacing: 8) {
-                Label(appVersionText, systemImage: "beats.headphones")
-                    .font(YYMusicFont.appFont(14, .semibold))
-                    .foregroundStyle(Color.beansLabel)
+                HStack(spacing: 10) {
+                    if let icon = customIconStore.customIcon {
+                        Image(uiImage: icon)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 30, height: 30)
+                            .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    } else {
+                        Image(systemName: "beats.headphones")
+                            .font(.system(size: 18))
+                            .foregroundStyle(LinearGradient.beansAccent)
+                    }
+                    Text(appVersionText)
+                        .font(YYMusicFont.appFont(14, .semibold))
+                        .foregroundStyle(Color.beansLabel)
+                }
                 Text("网易云 / QQ音乐 / 酷狗音乐 第三方客户端 · 仅供学习研究")
                     .font(YYMusicFont.appFont(12))
                     .foregroundStyle(Color.beansComment)
@@ -1007,6 +1021,9 @@ struct SettingsView: View {
     @State private var playbackExpanded = false
     @State private var showWallpaperPicker = false
     @State private var showFontImporter = false
+    /// 自定义图标选择器
+    @State private var showCustomIconPicker = false
+    @ObservedObject private var customIconStore = CustomIconStore.shared
     /// 更新日志
     @State private var showChangelog = false
     /// 配置备份与恢复
@@ -1038,6 +1055,7 @@ struct SettingsView: View {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 22) {
                         appearanceSection
+                        customIconSection
                         platformSection
                         playbackSection
                         changelogSection
@@ -1067,6 +1085,7 @@ struct SettingsView: View {
             }
             .ignoresSafeArea()
         }
+
         .fullScreenCover(isPresented: $showFontImporter) {
             FontDocumentPicker { url in
                 installFont(from: url)
@@ -1181,6 +1200,91 @@ struct SettingsView: View {
         }
     }
 
+    /// 自定义图标：上传一张图片作为 App 内品牌图标（播放页 / 登录页 / 「我的」页展示）
+    private var customIconSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "自定义图标")
+            HStack(spacing: 14) {
+                Group {
+                    if let icon = customIconStore.customIcon {
+                        Image(uiImage: icon)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Image("OnboardingLogo")
+                            .resizable()
+                            .scaledToFill()
+                    }
+                }
+                .frame(width: 64, height: 64)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(Color.beansComment.opacity(0.25), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("上传一张图片作为品牌图标")
+                        .font(YYMusicFont.appFont(14, .semibold))
+                        .foregroundStyle(Color.beansLabel)
+                    Text("显示在播放页、登录页、「我的」页等位置")
+                        .font(YYMusicFont.appFont(11))
+                        .foregroundStyle(Color.beansComment)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background { YYMusicGlass(shape: RoundedRectangle(cornerRadius: 18, style: .continuous)) }
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+
+            HStack(spacing: 10) {
+                Button {
+                    YYMusicHaptics.select()
+                    showCustomIconPicker = true
+                } label: {
+                    Label("从相册选择", systemImage: "photo.on.rectangle.angled")
+                        .font(YYMusicFont.appFont(13, .medium))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 11)
+                        .background(LinearGradient.beansAccent, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+                .buttonStyle(GlassPressButtonStyle(scale: 0.97))
+
+                if customIconStore.hasCustomIcon {
+                    Button {
+                        YYMusicHaptics.tap()
+                        customIconStore.clear()
+                        ToastCenter.shared.show("已恢复默认图标")
+                    } label: {
+                        Label("恢复默认", systemImage: "arrow.uturn.backward")
+                            .font(YYMusicFont.appFont(13, .medium))
+                            .foregroundStyle(Color.beansLabel)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 11)
+                            .background { YYMusicGlass(shape: RoundedRectangle(cornerRadius: 14, style: .continuous)) }
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                    .buttonStyle(GlassPressButtonStyle(scale: 0.97))
+                }
+            }
+
+            Text("提示：iOS 限制手机桌面图标只能使用内置图标，这里上传的图片会作为 App 内部展示的品牌图标（与壁纸同理，保存后重启依然生效）。")
+                .font(YYMusicFont.appFont(10))
+                .foregroundStyle(Color.beansComment.opacity(0.85))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .sheet(isPresented: $showCustomIconPicker) {
+            CustomIconPhotoPicker { data in
+                customIconStore.save(data)
+                YYMusicHaptics.success()
+                ToastCenter.shared.show("自定义图标已更新")
+            }
+            .ignoresSafeArea()
+        }
+    }
     /// 外观设置（原「我的」页外观折叠内容）
     private var appearanceSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -2118,6 +2222,7 @@ struct SettingsView: View {
         theme.clearAllWallpapers()
         theme.setUIStyle(.liquid)
         LyricBackgroundStore.clear()
+        CustomIconStore.shared.clear()
         PlatformPreferenceStore.shared.resetToDefault()
         YYMusicHaptics.success()
         backupMessage = "已重置 \(removed) 项设置，登录信息已保留"
@@ -2306,6 +2411,41 @@ struct WallpaperPhotoPicker: UIViewControllerRepresentable {
     }
 }
 
+// MARK: - 自定义图标照片选择器（单选，iOS 14+ 兼容）
+
+struct CustomIconPhotoPicker: UIViewControllerRepresentable {
+    let onPicked: (Data) -> Void
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration()
+        config.filter = .images
+        config.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+
+    final class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let parent: CustomIconPhotoPicker
+        init(_ parent: CustomIconPhotoPicker) { self.parent = parent }
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            picker.dismiss(animated: true)
+            guard let result = results.first else { return }
+            let provider = result.itemProvider
+            guard provider.canLoadObject(ofClass: UIImage.self) else { return }
+            provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
+                guard let data, !data.isEmpty else { return }
+                DispatchQueue.main.async {
+                    self.parent.onPicked(data)
+                }
+            }
+        }
+    }
+}
 // MARK: - 字体文件选择器（UIDocumentPicker 包装，比 SwiftUI fileImporter 稳定：所有文件可选，系统 asCopy 复制到沙盒）
 
 struct FontDocumentPicker: UIViewControllerRepresentable {
