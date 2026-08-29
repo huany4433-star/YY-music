@@ -28,13 +28,9 @@
   <img src="docs/screenshots/lyrics.png" width="320" alt="歌词页">
   <img src="docs/screenshots/player.png" width="320" alt="播放封面页">
 </p>
-<p align="center">
-  <img src="docs/screenshots/search.png" width="320" alt="搜索页面">
-  <img src="docs/screenshots/library.png" width="320" alt="音乐库">
-</p>
+
 <p align="center">
   <img src="docs/screenshots/settings.png" width="320" alt="全局设置">
-  <img src="docs/screenshots/theme-light.png" width="320" alt="主题设置（浅色）">
 </p>
 
 ---
