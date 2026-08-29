@@ -43,6 +43,19 @@ enum ChangelogStore {
 
     static let logs: [VersionLog] = [
         VersionLog(
+            id: "2.2",
+            version: "2.2",
+            title: "全新图标与视觉焕新",
+            notices: [],
+            features: [
+                "全新应用图标：网易云 × QQ 音乐结合体，红绿双圆融合两大平台",
+                "内置 5 套可选图标（极光 / 霓虹 / 糖果 / 星河 / 黑胶），设置 → 应用图标 一键切换桌面图标",
+                "保留经典黑胶唱片 YY 图标",
+                "全新界面预览图与在线介绍页"
+            ],
+            fixes: []
+        ),
+        VersionLog(
             id: "2.1",
             version: "2.1",
             title: "YY Music 全新出发",
