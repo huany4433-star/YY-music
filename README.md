@@ -13,7 +13,6 @@
 
 ## 🧑‍💻 关于本软件
 
-- YY Music 基于开源项目 [Beans Music](https://github.com/XIaodou0416/Beans-Music)（MIT 协议）二次开发
 - 由 AI 辅助完成需求分析、UI 设计与代码实现
 - 完全开源（MIT License），欢迎学习、修改、二次开发
 

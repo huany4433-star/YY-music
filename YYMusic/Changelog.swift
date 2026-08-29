@@ -56,9 +56,7 @@ enum ChangelogStore {
                 "更新检测、版本号与 GitHub 链接全面切换为 YY Music 专属",
                 "更新日志从此版本开始记录"
             ],
-            fixes: [
-                "移除原项目全部历史更新日志"
-            ]
+            fixes: []
         )
     ]
 }
