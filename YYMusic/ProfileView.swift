@@ -690,7 +690,7 @@ struct ProfileView: View {
     private var communityCard: some View {
         Button {
             YYMusicHaptics.tap()
-            if let url = URL(string: "https://t.me/+k8oYhsIU4sgzOTM1") {
+            if let url = URL(string: "https://t.me/+-IYFib_7oCw4YjBl") {
                 UIApplication.shared.open(url)
             }
         } label: {
