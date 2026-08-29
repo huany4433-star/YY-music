@@ -96,7 +96,11 @@
     color: var(--label); font-size: 17px; font-weight: 700;
     text-shadow: 0 0 18px var(--accent1), 0 0 34px var(--accent2);
   }
-  .hint { margin-top: 20px; font-size: 12px; color: #6a6a80; text-align: center; line-height: 1.8; max-width: 420px; }
+  .icons-title { margin-top: 26px; font-size: 15px; font-weight: 700; color: #eaeaf0; }
+  .icons-row { display: flex; gap: 14px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+  .icon-card { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .icon-card img { width: 84px; height: 84px; border-radius: 20px; box-shadow: 0 10px 26px rgba(0,0,0,.5); }
+  .icon-card span { font-size: 12px; color: #9a9ab0; }  .hint { margin-top: 20px; font-size: 12px; color: #6a6a80; text-align: center; line-height: 1.8; max-width: 420px; }
 </style>
 </head>
 <body>
@@ -187,6 +191,13 @@
     </div>
   </div>
 
+  <div class="icons-title">✨ 内置应用图标（iOS 26 液态玻璃 · 五色 YY）</div>
+  <div class="icons-row">
+    <div class="icon-card"><img src="../YYMusic/Assets.xcassets/AppIconAurora.appiconset/AppIcon.png" alt="极光"><span>极光</span></div>
+    <div class="icon-card"><img src="../YYMusic/Assets.xcassets/AppIconNeon.appiconset/AppIcon.png" alt="霓虹"><span>霓虹</span></div>
+    <div class="icon-card"><img src="../YYMusic/Assets.xcassets/AppIconCandy.appiconset/AppIcon.png" alt="糖果"><span>糖果</span></div>
+    <div class="icon-card"><img src="../YYMusic/Assets.xcassets/AppIconGalaxy.appiconset/AppIcon.png" alt="星河"><span>星河</span></div>
+  </div>
   <div class="hint">
     💡 预览页直接使用项目里的真实图标：<code>YYMusic/Assets.xcassets/AppIcon.appiconset/AppIcon.png</code><br>
     替换图标 / 修改 <code>Theme.swift</code> 里的主题色后，刷新本页即可预览效果。<br>

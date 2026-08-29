@@ -1023,6 +1023,8 @@ struct SettingsView: View {
     @State private var showFontImporter = false
     /// 自定义图标选择器
     @State private var showCustomIconPicker = false
+    /// 当前选中的应用图标（nil = 默认图标）
+    @State private var appIconSelection: String? = UIApplication.shared.alternateIconName
     @ObservedObject private var customIconStore = CustomIconStore.shared
     /// 更新日志
     @State private var showChangelog = false
@@ -1200,6 +1202,93 @@ struct SettingsView: View {
         }
     }
 
+    /// 应用图标：内置 4 套 iOS 26 液态玻璃风格五色 YY 图标，一键切换桌面图标
+    private var appIconSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "应用图标")
+            Text("内置 4 套五色 YY 图标（iOS 26 液态玻璃风格），点一下立即应用到桌面")
+                .font(YYMusicFont.appFont(12))
+                .foregroundStyle(Color.beansComment)
+                .fixedSize(horizontal: false, vertical: true)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 2), spacing: 16) {
+                appIconOption(name: nil, title: "经典", iconName: "OnboardingLogo")
+                appIconOption(name: "AppIconAurora", title: "极光", iconName: "AppIconAurora")
+                appIconOption(name: "AppIconNeon", title: "霓虹", iconName: "AppIconNeon")
+                appIconOption(name: "AppIconCandy", title: "糖果", iconName: "AppIconCandy")
+                appIconOption(name: "AppIconGalaxy", title: "星河", iconName: "AppIconGalaxy")
+            }
+        }
+    }
+
+    /// 单个图标选项
+    private func appIconOption(name: String?, title: String, iconName: String) -> some View {
+        let selected = appIconSelection == name
+        return Button {
+            setAppIcon(name)
+        } label: {
+            VStack(spacing: 6) {
+                ZStack {
+                    if let img = UIImage(named: iconName) {
+                        Image(uiImage: img)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(LinearGradient.beansAccent)
+                            .overlay(
+                                Text("YY")
+                                    .font(YYMusicFont.appFont(20, .bold))
+                                    .foregroundStyle(.white)
+                            )
+                    }
+                }
+                .frame(width: 64, height: 64)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(selected ? Color.beansAmber : Color.beansComment.opacity(0.2), lineWidth: selected ? 2.5 : 1)
+                )
+                .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
+                .overlay(alignment: .topTrailing) {
+                    if selected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 16))
+                            .foregroundStyle(Color.beansAmber)
+                            .background(Circle().fill(Color.beansBackground))
+                            .offset(x: 6, y: -6)
+                    }
+                }
+
+                Text(title)
+                    .font(YYMusicFont.appFont(12, .medium))
+                    .foregroundStyle(selected ? Color.beansAmber : Color.beansLabel)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background { YYMusicGlass(shape: RoundedRectangle(cornerRadius: 18, style: .continuous)) }
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        }
+        .buttonStyle(GlassPressButtonStyle(scale: 0.96))
+    }
+
+    /// 切换桌面图标（nil = 恢复默认）
+    private func setAppIcon(_ name: String?) {
+        guard UIApplication.shared.supportsAlternateIcons else {
+            ToastCenter.shared.show("当前系统不支持切换图标")
+            return
+        }
+        YYMusicHaptics.select()
+        UIApplication.shared.setAlternateIconName(name) { error in
+            if let error {
+                YYMusicLogger.shared.log("切换应用图标失败：\(error.localizedDescription)", level: .error)
+                ToastCenter.shared.show("切换图标失败，请稍后重试")
+            } else {
+                appIconSelection = name
+                YYMusicHaptics.success()
+            }
+        }
+    }
     /// 自定义图标：上传一张图片作为 App 内品牌图标（播放页 / 登录页 / 「我的」页展示）
     private var customIconSection: some View {
         VStack(alignment: .leading, spacing: 12) {

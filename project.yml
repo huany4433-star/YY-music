@@ -27,6 +27,24 @@ targets:
         CFBundleDisplayName: YY Music
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleIcons:
+          CFBundleAlternateIcons:
+            AppIconAurora:
+              CFBundleIconFiles:
+                - AppIconAurora
+              UIPrerenderedIcon: true
+            AppIconNeon:
+              CFBundleIconFiles:
+                - AppIconNeon
+              UIPrerenderedIcon: true
+            AppIconCandy:
+              CFBundleIconFiles:
+                - AppIconCandy
+              UIPrerenderedIcon: true
+            AppIconGalaxy:
+              CFBundleIconFiles:
+                - AppIconGalaxy
+              UIPrerenderedIcon: true
         UIBackgroundModes: [audio]
         UILaunchScreen:
           UIImageName: LaunchBackground
