@@ -45,6 +45,10 @@ targets:
               CFBundleIconFiles:
                 - AppIconGalaxy
               UIPrerenderedIcon: true
+            AppIconVinyl:
+              CFBundleIconFiles:
+                - AppIconVinyl
+              UIPrerenderedIcon: true
         UIBackgroundModes: [audio]
         UILaunchScreen:
           UIImageName: LaunchBackground

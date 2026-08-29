@@ -1217,6 +1217,7 @@ struct SettingsView: View {
                 appIconOption(name: "AppIconNeon", title: "霓虹", iconName: "AppIconNeon")
                 appIconOption(name: "AppIconCandy", title: "糖果", iconName: "AppIconCandy")
                 appIconOption(name: "AppIconGalaxy", title: "星河", iconName: "AppIconGalaxy")
+                appIconOption(name: "AppIconVinyl", title: "黑胶", iconName: "AppIconVinyl")
             }
         }
     }
