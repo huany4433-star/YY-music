@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YY Music 预览</title>
+<style>
+  :root {
+    --accent1: #7C4DFF; --accent2: #FF4D8D;
+    --bg: #0A0A0C; --card: #1C1C1E; --label: #FFFFFF; --secondary: #98989F;
+    --glass: rgba(255,255,255,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #121218; color: #eaeaf0; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; padding: 28px 16px 60px;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .sub { color: #88889a; font-size: 13px; margin-bottom: 20px; }
+  .controls {
+    background: #1c1c24; border: 1px solid #2c2c36; border-radius: 16px;
+    padding: 14px 18px; max-width: 420px; width: 100%; margin-bottom: 22px;
+  }
+  .ctrl-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+  .ctrl-label { font-size: 12px; color: #9a9ab0; width: 64px; }
+  .swatch {
+    width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.15); transition: transform .12s;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.active { border-color: #fff; box-shadow: 0 0 0 2px #000, 0 0 0 3px #fff; }
+  .btn {
+    border: 1px solid #3a3a46; background: #26262f; color: #ddd; padding: 6px 14px;
+    border-radius: 20px; font-size: 12px; cursor: pointer;
+  }
+  .btn.active { background: linear-gradient(135deg, var(--accent1), var(--accent2)); border-color: transparent; color: #fff; font-weight: 600; }
+  input[type=color] { width: 40px; height: 30px; border: none; background: none; cursor: pointer; padding: 0; }
+  .phone {
+    width: 300px; height: 620px; background: var(--bg); border-radius: 44px;
+    border: 10px solid #2a2a32; box-shadow: 0 30px 80px rgba(0,0,0,.6); position: relative; overflow: hidden;
+    transition: background .3s;
+  }
+  .island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 90px; height: 24px; background: #000; border-radius: 14px; z-index: 30; }
+  .screen { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 46px 16px 0; }
+  .screen[hidden] { display: none; }
+  .statusbar { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--label); margin-bottom: 12px; }
+  .tabbar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 56px;
+    background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-around; align-items: center; z-index: 20;
+  }
+  .tab { font-size: 10px; color: var(--secondary); text-align: center; }
+  .tab.active { color: var(--accent1); }
+  .tab span { display: block; font-size: 18px; margin-bottom: 2px; }
+  .searchbar {
+    background: var(--card); border-radius: 12px; padding: 9px 14px; font-size: 12px;
+    color: var(--secondary); display: flex; gap: 8px; align-items: center; margin-bottom: 14px;
+  }
+  .banner {
+    border-radius: 18px; padding: 18px; margin-bottom: 16px; color: #fff; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  }
+  .banner h3 { font-size: 17px; margin-bottom: 4px; }
+  .banner p { font-size: 11px; opacity: .85; }
+  .banner .big { position: absolute; right: -10px; bottom: -22px; font-size: 110px; opacity: .18; }
+  .section-title { font-size: 14px; font-weight: 700; color: var(--label); margin-bottom: 8px; }
+  .song { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .cover {
+    width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center;
+    justify-content: center; color: rgba(255,255,255,.85); font-size: 18px;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  }
+  .song .info { flex: 1; min-width: 0; }
+  .song .t { font-size: 12px; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .song .a { font-size: 10px; color: var(--secondary); }
+  .song .play { color: var(--accent1); font-size: 16px; }
+  .player-cover {
+    width: 190px; height: 190px; border-radius: 18px; margin: 14px auto; display: block;
+    box-shadow: 0 18px 40px rgba(0,0,0,.5); object-fit: cover;
+  }
+  .player-title { text-align: center; font-size: 16px; font-weight: 700; color: var(--label); }
+  .player-artist { text-align: center; font-size: 11px; color: var(--secondary); margin: 4px 0 18px; }
+  .progress { height: 5px; background: var(--card); border-radius: 3px; margin: 0 10px; position: relative; }
+  .progress::after {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 38%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  }
+  .time { display: flex; justify-content: space-between; font-size: 9px; color: var(--secondary); margin: 5px 10px 14px; }
+  .controls-row { display: flex; justify-content: center; align-items: center; gap: 26px; font-size: 20px; color: var(--label); }
+  .controls-row .big { font-size: 40px; }
+  .lyrics { text-align: center; font-size: 14px; line-height: 2.2; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .lyrics .line { color: var(--secondary); transition: all .3s; }
+  .lyrics .line.cur {
+    color: var(--label); font-size: 17px; font-weight: 700;
+    text-shadow: 0 0 18px var(--accent1), 0 0 34px var(--accent2);
+  }
+  .hint { margin-top: 20px; font-size: 12px; color: #6a6a80; text-align: center; line-height: 1.8; max-width: 420px; }
+</style>
+</head>
+<body>
+  <h1>🎵 YY Music 预览</h1>
+  <div class="sub">和真实 App 使用同一套主题色 · 改完刷新即可看到效果</div>
+
+  <div class="controls">
+    <div class="ctrl-row">
+      <div class="ctrl-label">主题</div>
+      <div id="swatches"></div>
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-label">模式</div>
+      <button class="btn active" id="modeDark" onclick="setMode('dark')">深色</button>
+      <button class="btn" id="modeLight" onclick="setMode('light')">浅色</button>
+      <span style="flex:1"></span>
+      <div class="ctrl-label" style="width:auto">自定义</div>
+      <input type="color" id="customColor" value="#7C4DFF" oninput="setCustom(this.value)">
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-label">页面</div>
+      <button class="btn active" id="scrHome" onclick="showScreen('home')">首页</button>
+      <button class="btn" id="scrPlayer" onclick="showScreen('player')">播放器</button>
+      <button class="btn" id="scrLyrics" onclick="showScreen('lyrics')">歌词</button>
+    </div>
+  </div>
+
+  <div class="phone">
+    <div class="island"></div>
+
+    <!-- 首页 -->
+    <div class="screen" id="home">
+      <div class="statusbar"><span>9:41</span><span>📶 🔋</span></div>
+      <div style="font-size:20px;font-weight:800;color:var(--label);margin-bottom:2px">晚上好 👋</div>
+      <div style="font-size:11px;color:var(--secondary);margin-bottom:12px">今天想听点什么？</div>
+      <div class="searchbar">🔍 搜索歌曲 / 歌手 / 歌单</div>
+      <div class="banner">
+        <h3>每日推荐</h3>
+        <p>根据你的口味精心挑选 30 首</p>
+        <div class="big">♪</div>
+      </div>
+      <div class="section-title">最近播放</div>
+      <div class="song"><div class="cover">♪</div><div class="info"><div class="t">晴天</div><div class="a">周杰伦</div></div><div class="play">▶</div></div>
+      <div class="song"><div class="cover">♪</div><div class="info"><div class="t">海阔天空</div><div class="a">Beyond</div></div><div class="play">▶</div></div>
+      <div class="song"><div class="cover">♪</div><div class="info"><div class="t">光年之外</div><div class="a">邓紫棋</div></div><div class="play">▶</div></div>
+      <div class="song"><div class="cover">♪</div><div class="info"><div class="t">稻香</div><div class="a">周杰伦</div></div><div class="play">▶</div></div>
+      <div class="tabbar">
+        <div class="tab active"><span>🏠</span>首页</div>
+        <div class="tab"><span>🔍</span>搜索</div>
+        <div class="tab"><span>📚</span>音乐库</div>
+        <div class="tab"><span>👤</span>我的</div>
+      </div>
+    </div>
+
+    <!-- 播放器 -->
+    <div class="screen" id="player" hidden>
+      <div class="statusbar"><span>9:41</span><span>🔋</span></div>
+      <img class="player-cover" id="playerCover" alt="cover">
+      <div class="player-title">晴天</div>
+      <div class="player-artist">周杰伦 · 叶惠美</div>
+      <div class="progress"></div>
+      <div class="time"><span>1:23</span><span>3:35</span></div>
+      <div class="controls-row"><span>⏮</span><span>⏸</span><span class="big" style="color:var(--accent1)">▶</span><span>⏭</span><span>📃</span></div>
+      <div class="tabbar">
+        <div class="tab"><span>🏠</span>首页</div>
+        <div class="tab"><span>🔍</span>搜索</div>
+        <div class="tab"><span>📚</span>音乐库</div>
+        <div class="tab"><span>👤</span>我的</div>
+      </div>
+    </div>
+
+    <!-- 歌词 -->
+    <div class="screen" id="lyrics" hidden>
+      <div class="statusbar"><span>9:41</span><span>🔋</span></div>
+      <div class="lyrics">
+        <div class="line">故事的小黄花</div>
+        <div class="line">从出生那年就飘着</div>
+        <div class="line cur">童年的荡秋千</div>
+        <div class="line">随记忆一直晃到现在</div>
+        <div class="line">Re So So Si Do Si La</div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span>🏠</span>首页</div>
+        <div class="tab"><span>🔍</span>搜索</div>
+        <div class="tab"><span>📚</span>音乐库</div>
+        <div class="tab"><span>👤</span>我的</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint">
+    💡 预览页直接使用项目里的真实图标：<code>YYMusic/Assets.xcassets/AppIcon.appiconset/AppIcon.png</code><br>
+    替换图标 / 修改 <code>Theme.swift</code> 里的主题色后，刷新本页即可预览效果。<br>
+    确认满意后：双击 <code>Push-to-GitHub.bat</code> 上传 → GitHub 自动打包 → 装到手机看真实效果。
+  </div>
+
+<script>
+  const THEMES = {
+    amber:   ["#F2A33C", "#C07A0A"],
+    mint:    ["#6BC79E", "#298C6B"],
+    pink:    ["#F58FB2", "#D15E8F"],
+    sky:     ["#63B5F5", "#3B7AD6"],
+    violet:  ["#B39EDB", "#7D57C2"],
+    cyber:   ["#40E6D9", "#0D8CA6"],
+    peach:   ["#FF9E85", "#F2618C"],
+    gold:    ["#EBBF59", "#73541A"],
+    emerald: ["#4DD98C", "#0D8059"]
+  };
+  const NAMES = { amber:"琥珀暖金", mint:"青碧湖绿", pink:"樱粉", sky:"星蓝", violet:"罗兰紫", cyber:"赛博青", peach:"蜜桃粉", gold:"鎏金黑", emerald:"翡翠绿" };
+  let mode = "dark";
+  let current = "violet";
+
+  const swatches = document.getElementById("swatches");
+  for (const [key, cols] of Object.entries(THEMES)) {
+    const d = document.createElement("div");
+    d.className = "swatch" + (key === current ? " active" : "");
+    d.title = NAMES[key];
+    d.style.background = "linear-gradient(135deg," + cols[0] + "," + cols[1] + ")";
+    d.onclick = () => setTheme(key);
+    swatches.appendChild(d);
+  }
+
+  function apply() {
+    const cols = THEMES[current];
+    const r = document.documentElement.style;
+    r.setProperty("--accent1", cols[0]);
+    r.setProperty("--accent2", cols[1]);
+    if (mode === "dark") {
+      r.setProperty("--bg", "#0A0A0C"); r.setProperty("--card", "#1C1C1E");
+      r.setProperty("--label", "#FFFFFF"); r.setProperty("--secondary", "#98989F");
+      r.setProperty("--glass", "rgba(255,255,255,0.06)");
+    } else {
+      r.setProperty("--bg", "#F2F2F7"); r.setProperty("--card", "#FFFFFF");
+      r.setProperty("--label", "#000000"); r.setProperty("--secondary", "#6C6C70");
+      r.setProperty("--glass", "rgba(0,0,0,0.03)");
+    }
+  }
+  function setTheme(key) {
+    current = key;
+    document.querySelectorAll(".swatch").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".swatch").forEach(s => { if (s.title === NAMES[key]) s.classList.add("active"); });
+    apply();
+  }
+  function setMode(m) {
+    mode = m;
+    document.getElementById("modeDark").classList.toggle("active", m === "dark");
+    document.getElementById("modeLight").classList.toggle("active", m === "light");
+    apply();
+  }
+  function setCustom(hex) {
+    THEMES[current] = [hex, hex];
+    apply();
+  }
+  function showScreen(name) {
+    ["home","player","lyrics"].forEach(n => document.getElementById(n).hidden = n !== name);
+    ["scrHome","scrPlayer","scrLyrics"].forEach(id => document.getElementById(id).classList.remove("active"));
+    document.getElementById("scr" + name[0].toUpperCase() + name.slice(1)).classList.add("active");
+  }
+  // 播放器封面：直接用项目里的真实 App 图标
+  document.getElementById("playerCover").src = "../YYMusic/Assets.xcassets/AppIcon.appiconset/AppIcon.png";
+  apply();
+</script>
+</body>
+</html>
