@@ -1,7 +1,8 @@
 # YY Music 🎵
 
-> 一款基于 **iOS 26 原生液态玻璃（Liquid Glass）** 的第三方音乐播放器（兼容 iOS 16+，低版本自动使用系统材质），聚合网易云音乐与 QQ 音乐，纯 SwiftUI 实现。
-> 本软件完全开源，仅供学习研究使用。
+> YY Music 是一款基于 **iOS 26 原生液态玻璃（Liquid Glass）** 的第三方音乐播放器（兼容 iOS 16+，低版本自动使用系统材质），聚合网易云音乐、QQ 音乐与酷狗音乐，纯 SwiftUI 实现。
+> 从全局主题、壁纸到播放器布局全部可自定义，还支持上传自定义品牌图标。
+> 完全开源（MIT License），仅供学习研究使用。
 
 [![GitHub Pages 预览](https://img.shields.io/badge/在线预览-GitHub%20Pages-blue)](https://huany4433-star.github.io/YY-Music/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
